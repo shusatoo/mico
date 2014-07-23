@@ -1,0 +1,13 @@
+{
+    "require": {
+        "monolog/monolog": "1.10.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mico\\": "app/",
+            "Mico\\Config\\": "app/config/",
+            "Mico\\Command\\": "app/Command/",
+            "Mico\\Migration\\": "app/Migration/"
+        }
+    }
+}
