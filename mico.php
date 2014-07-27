@@ -1,7 +1,7 @@
 <?php
 require_once('vendor/autoload.php');
 
-use \Mico\Command;
+use \Mico\Cmd;
 
 if ( !isset($argv[1]) ) {
     usage();
@@ -15,28 +15,28 @@ case '-h':
 case '--help':
     break;
 case 'up':
-    $cmd = new Command\Up();
+    $cmd = new Cmd\Up();
     break;
 case 'down':
-    // $cmd = new \Command\Down();
+    // $cmd = new \Cmd\Down();
     break;
 case 'redo':
-    // $cmd = new \Command\Redo();
+    // $cmd = new \Cmd\Redo();
     break;
 case 'status':
-    // $cmd = new \Command\Status();
+    // $cmd = new \Cmd\Status();
     break;
 case 'create':
-    // $cmd = new \Command\Create();
+    // $cmd = new \Cmd\Create();
     break;
 case 'dbversion':
-    // $cmd = new \Command\Dbversion();
+    // $cmd = new \Cmd\Dbversion();
     break;
 default:
     echo "error: unknown command.\n";
     exit;
 }
-// $cmd->execute();
+$cmd->execute();
 
 
 $conf = \Mico\Config\Config::getConf();

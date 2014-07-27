@@ -1,7 +1,7 @@
 <?php
-namespace \Mico\Migration;
+namespace Mico\Migration;
 
-class Migrator
+abstract class Migrator
 {
     protected $migrationsDir = null;
 
@@ -10,9 +10,11 @@ class Migrator
     public function __construct()
     {
         $conf = \Mico\Config\Config::getConf();
-        $this->db = new PDO($conf['dsn'], $conf['user'], $conf['password']);
+        $this->db = new \PDO($conf['dsn'], $conf['user'], $conf['password']);
         $this->migrationsDir = $conf['migrationsDir'];
     }
+
+    abstract protected function updateSchema($migrationFile, $cmdName);
 
     /**
      * run migrations.
@@ -35,14 +37,21 @@ class Migrator
 
         if ($currentVer < $targetVer) {
             sort($migrations);
+            $cmdName = 'up';
         } else {
             rsort($migrations);
+            $cmdName = 'down';
         }
 
-        $migrator = new Migrator\Sql();
+        if (!$this->confirmUpdateSchema($migrations)) {
+            echo "migration stopped.\n";
+            return;
+        }
+
+        echo "migration start.\n";
         foreach ($migrations as $m) {
             try {
-                $migrator->run($m);
+                $this->updateSchema($m, $cmdName);
             } catch (Exception $e) {
                 echo "apply migration failed. migration=[{$m}]\n";
                 throw $e;
@@ -50,6 +59,30 @@ class Migrator
             echo "apply migration succeed. migration=[{$m}]\n";
         }
     }
+
+    /**
+     * @param string $migrationFile
+     * @param string $cmdName
+     * @return bool  if answered yes:true  no:false
+     */
+    protected function confirmUpdateSchema($migrationFiles)
+    {
+        echo "following files which is due to be executed. \n";
+        foreach ($migrationFiles as $m) {
+            echo $m."\n";
+        }
+        echo "Are you sure you want to perform migrate? [y/N]\n";
+        flush();
+        ob_flush();
+        $confirmation = trim(fgets(STDIN));
+        if ($confirmation === 'y') {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     /**
      * collect migration script filenames
@@ -188,19 +221,26 @@ class Migrator
     {
         $sqlMigrationTemplate = ''
             . '--'."\n"
-            . '-- *** mico Up ***'."\n"
-            . '-- this section is performed by the Up command.'
+            . '-- *** mico Up START ***'."\n"
+            . '-- this section(Until it becomes a line with a [mico Up END] sign)'
+            . '-- is performed by the Up command.'
             . '--'."\n"
             . "\n"
             . "\n"
             . "\n"
+            . '-- *** mico Up END ***'."\n"
+            . "\n"
+            . "\n"
+            . "\n"
             . '--'."\n"
-            . '-- *** mico Down ***'."\n"
-            . '-- this section is performed by the Down command.'
+            . '-- *** mico Down START ***'."\n"
+            . '-- this section(Until it becomes a line with a [mico Down END] sign)'
+            . '-- is performed by the Up command.'
             . '--'."\n"
             . "\n"
             . "\n"
             . "\n"
+            . '-- *** mico Down END ***'."\n"
             ;
 
         return $sqlMigrationTemplate;

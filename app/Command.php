@@ -1,5 +1,5 @@
 <?php
-namespace \Mico;
+namespace Mico;
 
 abstract class Command
 {
@@ -12,8 +12,8 @@ abstract class Command
     public function __construct()
     {
         $this->config = \Mico\Config\Config::getConf();
-        $this->db = new PDO($this->config['dsn'], $this->config['user'], $this->config['password']);
-        $this->migrator = new \Mico\Migration\Migrator();
+        $this->db = new \PDO($this->config['dsn'], $this->config['user'], $this->config['password']);
+        $this->migrator = new \Mico\Migration\Migrator\Sql();
     }
 
     abstract public function execute();

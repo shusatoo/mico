@@ -6,7 +6,7 @@
         "psr-4": {
             "Mico\\": "app/",
             "Mico\\Config\\": "app/config/",
-            "Mico\\Command\\": "app/Command/",
+            "Mico\\Cmd\\": "app/Cmd/",
             "Mico\\Migration\\": "app/Migration/"
         }
     }
